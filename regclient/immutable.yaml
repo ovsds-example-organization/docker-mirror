@@ -1,0 +1,41 @@
+version: 1
+
+creds:
+  - registry: ghcr.io
+    user: USERNAME
+    pass: '{{env "GITHUB_TOKEN"}}'
+
+sync:
+  - target: '{{env "GITHUB_REGISTRY"}}/postgres'
+    source: postgres
+    type: repository
+    tags:
+      allow:
+        - 15.1-alpine3.17
+        - 15.3-alpine3.18
+        - 16.0-alpine3.18
+
+  - target: '{{env "GITHUB_REGISTRY"}}/redis'
+    source: redis
+    type: repository
+    tags:
+      allow:
+        - 7.0.8-alpine3.17
+        - 7.2.2-alpine3.18
+
+  - target: '{{env "GITHUB_REGISTRY"}}/regsync'
+    source: ghcr.io/regclient/regsync
+    type: repository
+    tags:
+      allow:
+        - v0.5.7
+
+  - target: '{{env "GITHUB_REGISTRY"}}/ubuntu-vanilla'
+    source: ubuntu
+    type: repository
+    tags:
+      allow:
+        - jammy-20230126
+        - jammy-20230301
+        - jammy-20230308
+        - jammy-20231004

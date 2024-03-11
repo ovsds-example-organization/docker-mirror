@@ -1,0 +1,61 @@
+version: 3
+
+silent: true
+
+vars:
+  MUTABLE_CONFIG: mutable.yaml
+  IMMUTABLE_CONFIG: immutable.yaml
+
+  GITHUB_REGISTRY: ghcr.io/ovsds-example-organization
+
+tasks:
+  _regclient:
+    internal: true
+    dir: ./
+    cmds:
+      - docker container run
+        --env GITHUB_REGISTRY="{{.GITHUB_REGISTRY}}"
+        --env GITHUB_TOKEN="{{.GITHUB_TOKEN}}"
+        --interactive
+        --net host
+        $(docker build --load --quiet .)
+        --config "/home/appuser/{{.CONFIG}}"
+        {{.COMMAND}}
+  #  for local testing
+  #  vars:
+  #    GITHUB_TOKEN:
+  #      sh: gh config get -h github.com oauth_token
+
+  immutable-check:
+    desc: Dry run sync of immutable tags
+    cmds:
+      - task: _regclient
+        vars:
+          CONFIG: "{{.IMMUTABLE_CONFIG}}"
+          COMMAND: check
+
+  immutable-sync:
+    desc: Sync immutable tags
+    cmds:
+      - task: _regclient
+        vars:
+          CONFIG: "{{.IMMUTABLE_CONFIG}}"
+          COMMAND: once {{ if eq .FORCE "false" }}--missing{{ end }}
+    vars:
+      FORCE: '{{.FORCE | default "false"}}'
+
+  mutable-check:
+    desc: Dry run sync of mutable tags
+    cmds:
+      - task: _regclient
+        vars:
+          CONFIG: "{{.MUTABLE_CONFIG}}"
+          COMMAND: check
+
+  mutable-sync:
+    desc: Sync mutable tags
+    cmds:
+      - task: _regclient
+        vars:
+          CONFIG: "{{.MUTABLE_CONFIG}}"
+          COMMAND: once
