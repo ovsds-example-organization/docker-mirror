@@ -1,0 +1,14 @@
+version: 1
+
+creds:
+  - registry: ghcr.io
+    user: USERNAME
+    pass: '{{env "GITHUB_TOKEN"}}'
+
+sync:
+  - target: '{{env "GITHUB_REGISTRY"}}/ubuntu-vanilla'
+    source: ubuntu
+    type: repository
+    tags:
+      allow:
+        - jammy

@@ -1,0 +1,15 @@
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Artifacts
+*.whl
+
+# Dependencies
+node_modules/
